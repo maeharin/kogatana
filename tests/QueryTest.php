@@ -94,4 +94,17 @@ class QueryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("(SELECT\n  *\nFROM\n  users\nWHERE\n  name = ?)", $sql);
         $this->assertEquals(array('hoge'), $binds);
     }
+
+    public function test_combination_using_subq()
+    {
+        $subq = \Kogatana\Query::table('songs')->eq('category', 'rock');
+        list($subq_sql, $subq_binds) = $subq->to_subq();
+
+        $query = \Kogatana\Query::table('users')->eq('sex', 'woman')->where_raw("EXISTS $subq_sql", $subq_binds);
+        list($sql, $binds) = $query->to_sql();
+
+        $expected = "SELECT\n  *\nFROM\n  users\nWHERE\n  sex = ?\n  AND EXISTS (SELECT\n  *\nFROM\n  songs\nWHERE\n  category = ?)";
+        $this->assertEquals($expected, $sql);
+        $this->assertEquals(array('woman', 'rock'), $binds);
+    }
 }
