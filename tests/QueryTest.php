@@ -71,5 +71,27 @@ class QueryTest extends PHPUnit_Framework_TestCase
         list($sql, $binds) = $query->to_sql();
         $this->assertEquals("SELECT\n  *\nFROM\n  users\nINNER JOIN songs ON users.id = songs.user_id", $sql);
     }
-}
 
+    public function test_right_join()
+    {
+        $query = \Kogatana\Query::table('users')->join('songs', array('users.id', '=', 'songs.user_id'), 'right');
+        list($sql, $binds) = $query->to_sql();
+        $this->assertEquals("SELECT\n  *\nFROM\n  users\nRIGHT OUTER JOIN songs ON users.id = songs.user_id", $sql);
+    }
+
+    public function test_count_sql()
+    {
+        $query = \Kogatana\Query::table('users')->eq('name', 'hoge');
+        list($sql, $binds) = $query->count_sql();
+        $this->assertEquals("SELECT\n  count(*)\nFROM\n  users\nWHERE\n  name = ?", $sql);
+        $this->assertEquals(array('hoge'), $binds);
+    }
+
+    public function test_to_subq()
+    {
+        $query = \Kogatana\Query::table('users')->eq('name', 'hoge');
+        list($sql, $binds) = $query->to_subq();
+        $this->assertEquals("(SELECT\n  *\nFROM\n  users\nWHERE\n  name = ?)", $sql);
+        $this->assertEquals(array('hoge'), $binds);
+    }
+}
