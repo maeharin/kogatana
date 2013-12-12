@@ -115,6 +115,24 @@ class Query
         return array($this->build_query($parts), $values);
     }
 
+    public function update_sql($attrs)
+    {
+        $values = array_values($attrs);
+
+        $parts = array();
+        $parts[] = "UPDATE";
+        $parts[] = "  $this->from";
+        $parts[] = "SET";
+        $parts[] = "  ". implode(', ', array_map(function($attr) { return "$attr = ?"; }, array_keys($attrs)));
+        if (! empty($this->wheres)) $parts[] = "WHERE\n  "    . $this->where_clauses();
+
+        $sql = $this->build_query($parts);
+        $binds = array_merge($values, $this->binds);
+
+        $this->reset();
+        return array($sql, $binds);
+    }
+
     public function delete_sql()
     {
         $parts = array();
