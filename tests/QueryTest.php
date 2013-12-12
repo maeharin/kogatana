@@ -72,6 +72,15 @@ class QueryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("SELECT\n  *\nFROM\n  users\nINNER JOIN songs ON users.id = songs.user_id", $sql);
     }
 
+    public function test_multiple_join()
+    {
+        $query = \Kogatana\Query::table('users')
+            ->join('songs', array('users.id', '=', 'songs.user_id'))
+            ->join('tracks', array('songs.id', '=', 'tracks.song_id'));
+        list($sql, $binds) = $query->to_sql();
+        $this->assertEquals("SELECT\n  *\nFROM\n  users\nLEFT OUTER JOIN songs ON users.id = songs.user_id\n  LEFT OUTER JOIN tracks ON songs.id = tracks.song_id", $sql);
+    }
+
     public function test_right_join()
     {
         $query = \Kogatana\Query::table('users')->join('songs', array('users.id', '=', 'songs.user_id'), 'right');
