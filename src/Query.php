@@ -7,6 +7,7 @@ class Query
     protected $select;
     protected $from;
     protected $wheres;
+    protected $joins;
     protected $binds;
     protected $limit;
     protected $offset;
