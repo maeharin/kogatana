@@ -79,58 +79,26 @@ class Query
     {
         $parts = $this->build_parts();
         $res = array($this->build_query($parts), $this->binds);
-
-        // for multiple use
-        $this->_reset_binds();
-        $this->select = null;
-
+        $this->reset();
         return $res;
-    }
-
-    private function _reset_binds()
-    {
-        $this->binds = null;
     }
 
     public function to_subq()
     {
         $parts = $this->build_parts();
         $res = array("(" . $this->build_query($parts) . ")" , $this->binds);
-
-        // for multiple use
-        $this->_reset_binds();
-        $this->select = null;
-
+        $this->reset();
         return $res;
     }
 
     public function count_sql()
     {
         $this->select('count(*)');
-
-        $parts = array();
-
-        $parts[] = "SELECT\n  " . $this->select_clauses();
-
-        $parts[] = "FROM\n  " . $this->from;
-
-        if (! empty($this->joins)) {
-            $parts[] = $this->join_clauses();
-        }
-
-        if (! empty($this->wheres)) {
-            $parts[] = "WHERE\n  " . $this->where_clauses();
-        }
-
+        $parts = $this->build_parts('count');
         $res = array($this->build_query($parts), $this->binds);
-
-        // for multiple use
-        $this->_reset_binds();
-        $this->select = null;
-
+        $this->reset();
         return $res;
     }
-
 
     // ----------------------------------------------------------
     // private
@@ -141,7 +109,7 @@ class Query
         return implode("\n", $parts);
     }
 
-    private function build_parts()
+    private function build_parts($type = null)
     {
         $parts = array();
 
@@ -150,10 +118,18 @@ class Query
         if (! empty($this->joins))  $parts[] = $this->join_clauses();
         if (! empty($this->wheres)) $parts[] = "WHERE\n  "    . $this->where_clauses();
         if (! empty($this->order))  $parts[] = "ORDER BY\n  " . $this->order;
-        if (! empty($this->limit))  $parts[] = "LIMIT\n  "    . $this->limit;
-        if (! empty($this->offset)) $parts[] = "OFFSET\n  "   . $this->offset;
+        if ($type !== 'count') {
+            if (! empty($this->limit))  $parts[] = "LIMIT\n  "    . $this->limit;
+            if (! empty($this->offset)) $parts[] = "OFFSET\n  "   . $this->offset;
+        }
 
         return $parts;
+    }
+
+    private function reset()
+    {
+        $this->binds = null;
+        $this->select = null;
     }
 
     private function select_clauses()
