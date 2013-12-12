@@ -115,6 +115,18 @@ class Query
         return array($this->build_query($parts), $values);
     }
 
+    public function delete_sql()
+    {
+        $parts = array();
+        $parts[] = "DELETE FROM";
+        $parts[] = "  $this->from";
+        if (! empty($this->wheres)) $parts[] = "WHERE\n  "    . $this->where_clauses();
+        if (! empty($this->limit))  $parts[] = "LIMIT\n  "    . $this->limit;
+        $res = array($this->build_query($parts), $this->binds);
+        $this->reset();
+        return $res;
+    }
+
     // ----------------------------------------------------------
     // private
     // ----------------------------------------------------------
