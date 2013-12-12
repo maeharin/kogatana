@@ -10,7 +10,8 @@ class Kogatana
             __DIR__ . '/',
         );
 
-        $class_name = end(explode('\\', $class_name));
+        $parts = explode('\\', $class_name);
+        $class_name = end($parts);
 
         foreach($load_dirs as $load_dir) {
             $file_name = $load_dir . $class_name . '.php';
