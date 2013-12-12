@@ -17,6 +17,13 @@ class QueryUpdateTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('engineer', 20, 'programmer'), $binds);
     }
 
+    public function test_update_sql_with_single_value()
+    {
+        list($sql, $binds) = \Kogatana\Query::table('users')->update_sql(array('job' => 'engineer'));
+        $this->assertEquals("UPDATE\n  users\nSET\n  job = ?", $sql);
+        $this->assertEquals(array('engineer'), $binds);
+    }
+
     public function test_query_should_be_reusable()
     {
         $query = \Kogatana\Query::table('users')->eq('job', 'programmer');

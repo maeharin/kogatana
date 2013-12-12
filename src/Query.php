@@ -127,7 +127,7 @@ class Query
         if (! empty($this->wheres)) $parts[] = "WHERE\n  "    . $this->where_clauses();
 
         $sql = $this->build_query($parts);
-        $binds = array_merge($values, $this->binds);
+        $binds = array_merge($values, (array)$this->binds);
 
         $this->reset();
         return array($sql, $binds);

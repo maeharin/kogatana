@@ -17,6 +17,13 @@ class QueryInsertTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('hoge', 'man'), $binds);
     }
 
+    public function test_insert_sql_with_single_value()
+    {
+        list($sql, $binds) = \Kogatana\Query::table('users')->insert_sql(array('name' => 'hoge'));
+        $this->assertEquals("INSERT INTO users\n  (name)\nVALUES\n  (?)", $sql);
+        $this->assertEquals(array('hoge'), $binds);
+    }
+
     public function test_include_null()
     {
         list($sql, $binds) = \Kogatana\Query::table('users')->insert_sql(array('name' => 'hoge', 'sex' => null, 'age' => 30));
