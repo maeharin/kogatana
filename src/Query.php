@@ -100,6 +100,21 @@ class Query
         return $res;
     }
 
+    public function insert_sql($attrs)
+    {
+        $keys = array_keys($attrs);
+        $values = array_values($attrs);
+        $place_holders = array_map(function($v) { return "?"; }, $values);
+
+        $parts = array();
+        $parts[] = "INSERT INTO $this->from";
+        $parts[] = "  (" . implode(', ', $keys) . ")";
+        $parts[] = "VALUES";
+        $parts[] = "  (" . implode(', ', $place_holders) . ")";
+
+        return array($this->build_query($parts), $values);
+    }
+
     // ----------------------------------------------------------
     // private
     // ----------------------------------------------------------
