@@ -77,32 +77,7 @@ class Query
 
     public function to_sql()
     {
-        $parts = array();
-
-        $parts[] = "SELECT\n  " . $this->select_clauses();
-
-        $parts[] = "FROM\n  " . $this->from;
-
-        if (! empty($this->joins)) {
-            $parts[] = $this->join_clauses();
-        }
-
-        if (! empty($this->wheres)) {
-            $parts[] = "WHERE\n  " . $this->where_clauses();
-        }
-
-        if (! empty($this->order)) {
-            $parts[] = "ORDER BY\n  " . $this->order;
-        }
-
-        if (! empty($this->limit)) {
-            $parts[] = "LIMIT\n  " . $this->limit;
-        }
-
-        if (! empty($this->offset)) {
-            $parts[] = "OFFSET\n  " . $this->offset;
-        }
-
+        $parts = $this->build_parts();
         $res = array($this->build_query($parts), $this->binds);
 
         // for multiple use
@@ -117,37 +92,9 @@ class Query
         $this->binds = null;
     }
 
-    /**
-     * FIXME
-     */
     public function to_subq()
     {
-        $parts = array();
-
-        $parts[] = "SELECT\n  " . $this->select_clauses();
-
-        $parts[] = "FROM\n  " . $this->from;
-
-        if (! empty($this->joins)) {
-            $parts[] = $this->join_clauses();
-        }
-
-        if (! empty($this->wheres)) {
-            $parts[] = "WHERE\n  " . $this->where_clauses();
-        }
-
-        if (! empty($this->order)) {
-            $parts[] = "ORDER BY\n  " . $this->order;
-        }
-
-        if (! empty($this->limit)) {
-            $parts[] = "LIMIT\n  " . $this->limit;
-        }
-
-        if (! empty($this->offset)) {
-            $parts[] = "OFFSET\n  " . $this->offset;
-        }
-
+        $parts = $this->build_parts();
         $res = array("(" . $this->build_query($parts) . ")" , $this->binds);
 
         // for multiple use
@@ -192,6 +139,21 @@ class Query
     private function build_query($parts)
     {
         return implode("\n", $parts);
+    }
+
+    private function build_parts()
+    {
+        $parts = array();
+
+        $parts[] = "SELECT\n  " . $this->select_clauses();
+        $parts[] = "FROM\n  "   . $this->from;
+        if (! empty($this->joins))  $parts[] = $this->join_clauses();
+        if (! empty($this->wheres)) $parts[] = "WHERE\n  "    . $this->where_clauses();
+        if (! empty($this->order))  $parts[] = "ORDER BY\n  " . $this->order;
+        if (! empty($this->limit))  $parts[] = "LIMIT\n  "    . $this->limit;
+        if (! empty($this->offset)) $parts[] = "OFFSET\n  "   . $this->offset;
+
+        return $parts;
     }
 
     private function select_clauses()
